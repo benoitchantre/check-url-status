@@ -1,0 +1,24 @@
+name: 'Check URL status'
+description: 'Verifies that the given URL returns a successful (200) status code.'
+author: 'Benoît Chantre'
+
+inputs:
+  url:
+    description: 'URL to test'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Check for successful response'
+      shell: 'bash'
+      run: |
+        echo "Testing ${{ inputs.url }}"
+        status_code=$(curl --write-out '%{http_code}' --silent --head --location --max-time 15 --output /dev/null ${{ inputs.url }})
+        echo "Status code: $status_code"
+        if [[ "$status_code" != 200 ]]; then
+          exit 1
+        fi
+
+branding:
+  icon: 'check'
+  color: 'green'
